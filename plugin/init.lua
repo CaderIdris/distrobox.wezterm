@@ -74,9 +74,13 @@ local function spawn_distrobox_mux_tab(action_window, pane, id, label)
 				tostring(label),
 				'--no-workdir'
 			}
-			if pub.entry_commands.label then
+			if pub.entry_commands[label] then
+				wezterm.log_info(
+					"Entry command found for " .. label
+				)
+				wezterm.log_info(pub.entry_commands[label])
 				table.insert(cmd, "--")
-				table.insert(cmd. pub.entry_commands.label)
+				table.insert(cmd, pub.entry_commands[label])
 			end
 		end
 		local mux_win = action_window:mux_window()
@@ -102,6 +106,7 @@ end
 ---@param window MuxWindow
 ---@param pane MuxPane
 function pub.distrobox_nvim_tab (window, pane)
+	wezterm.log_info(pub.entry_commands)
 	local act = wezterm.action
 	local choices = {
 		{
@@ -133,26 +138,40 @@ end
 pub.entry_commands = {}
 
 -- Add keybinding to wezterm
+---@alias container_name string The name of the container
+---@alias command string The command to use when entering the container
+---@alias container_entry_commands table<container_name, command>
 ---@param config ConfigBuilder
----@param opts { key: string?, mods: string?, entry_commands: table<string, string>? }?
+---@param opts { key: string?, mods: string?, entry_commands: container_entry_commands? }?
 function pub.apply_to_config(config, opts)
 	local key = "mapped:r"
 	local mods = "CTRL|SHIFT"
-
+	local next = next
+	wezterm.log_info(config)
+	wezterm.log_info(opts)
+	---@type container_entry_commands
 	if opts then
+		wezterm.log_info("Extra options provided")
+		if opts.entry_commands then
+			wezterm.log_info(opts.entry_commands)
+			---@type container_entry_commands
+			for k, v in pairs(opts.entry_commands) do
+				wezterm.log_info(k)
+				wezterm.log_info(v)
+				pub.entry_commands[k] = v
+			end
+		end
 		if opts.key then
+			wezterm.log_info("Alternative keymap: " .. opts.key)
 			key = opts.key
 		end
 		if opts.mods then
+			wezterm.log_info("Alternative modifier: " .. opts.mods)
 			mods = opts.mods
 		end
-		if opts.entry_commands then
-			for _, v in ipairs(opts.entry_commands) do
-				table.insert(pub.entry_commands, v)
-			end
-		end
-
 	end
+	wezterm.log_info(pub.entry_commands)
+
 	if config.keys == nil then
 		config.keys = {}
 	end
