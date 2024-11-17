@@ -144,7 +144,7 @@ pub.entry_commands = {}
 ---@param config ConfigBuilder
 ---@param opts { key: string?, mods: string?, entry_commands: container_entry_commands? }?
 function pub.apply_to_config(config, opts)
-	local key = "mapped:r"
+	local key = "mapped:d"
 	local mods = "CTRL|SHIFT"
 	local next = next
 	wezterm.log_info(config)
