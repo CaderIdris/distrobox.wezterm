@@ -85,11 +85,12 @@ local function spawn_distrobox_mux_tab(action_window, pane, id, label)
 		end
 		local mux_win = action_window:mux_window()
 		if id ~= "" then
-			local _ = mux_win:spawn_tab(
+			local tab, _, _ = mux_win:spawn_tab(
 				{
 					args = cmd,
 				}
 			)
+			tab.set_title(label)
 			wezterm.log_info('you selected ', label)
 		else
 			local _ = mux_win:spawn_tab(
